@@ -1,0 +1,5 @@
+upload_channels:
+  - ak_test
+channels:
+  - ak_test
+upload_without_merge: True

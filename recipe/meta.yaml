@@ -1,29 +1,29 @@
 {% set name = "scikit-survival" %}
-{% set version = "0.21.0" %}
-
+{% set version = "0.23.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scikit-survival-{{ version }}.tar.gz
-  sha256: adc744b65983dced8142ec31465389fc738405d589051251e5447aad9a1e02bc
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scikit_survival-{{ version }}.tar.gz
+  sha256: 9ee5835e6bd74eab69aac0e71511cc4c033d085bed609e5da771dac053ff7e27
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
-  skip: true  # [py<38]
+  # we do not have osqp for 3.12
+  skip: true  # [py<39 or py>311 ]
 
 requirements:
   build:
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
   host:
-    - cython 0.29.32
+    - cython >=3.0.10
     - numpy {{ numpy }}
-    - scikit-learn 1.2.1
-    - setuptools_scm 7.0.4
+    - scikit-learn >=1.4.0,<1.6
+    - setuptools_scm >=8
     - packaging 
     - python
     - pip
@@ -32,13 +32,13 @@ requirements:
   run:
     - python
     - {{ pin_compatible('numpy') }}
-    - scikit-learn >=1.2.0,<1.3
-    - importlib_resources >=1.3  # [py <= 38]
+    - scikit-learn >=1.4.0,<1.6
+    #- importlib_resources >=1.3  # [py <= 38]
     - ecos
     - joblib
     - numexpr
     - osqp !=0.6.0,!=0.6.1
-    - pandas >=1.0.5
+    - pandas >=1.4.0
     - scipy >=1.3.2
 
 test:

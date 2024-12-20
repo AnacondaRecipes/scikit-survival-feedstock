@@ -1,6 +1,2 @@
 upload_channels:
   - sfe1ed40
-channels:
-  - sfe1ed40
-  - https://staging.continuum.io/prefect/fs/scikit-learn-feedstock/pr36/f77168d
-  - https://staging.continuum.io/prefect/fs/scipy-feedstock/pr37/55cbf5b

@@ -24,8 +24,8 @@ requirements:
   host:
     - cython >=3.0.10
     - numpy >=2.0.0
-    - scikit-learn >=1.4.0,<1.5.0  # [py<=312]
-    - scikit-learn >=1.5.0,<1.6.0  # [py>312]
+    - scikit-learn >=1.4.0,<2.0.0  # [py<=312]
+    - scikit-learn >=1.5.0,<2.0.0  # [py>312]
     - setuptools_scm >=8
     - packaging 
     - python

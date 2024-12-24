@@ -13,7 +13,7 @@ build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   # we do not have osqp for 3.12
-  skip: true  # [py<39 or py>311 ]
+  skip: true  # [py<39 or py>311]
   ignore_run_exports:
     - numpy
 
@@ -24,8 +24,14 @@ requirements:
   host:
     - cython >=3.0.10
     - numpy >=2.0.0
-    - scikit-learn >=1.4.0,<2.0.0  # [py<=312]
-    - scikit-learn >=1.5.0,<2.0.0  # [py>312]
+    # Upstream specifies scikit-learn as
+    # - scikit-learn >=1.4.0,<1.5.0  # [py<=312]
+    # - scikit-learn >=1.5.0,<1.6.0  # [py>312]
+    # but we dont have 1.4.* compatible with numpy 2.0.
+    # Testing shows no issues with scikit-learn 1.5.2,
+    # also the changelog https://scikit-learn.org/stable/whats_new/v1.5.html
+    # shows no breaking changes between 1.4 and 1.5.
+    - scikit-learn 1.5.2
     - setuptools_scm >=8
     - packaging 
     - python

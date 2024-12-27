@@ -1,47 +1,57 @@
 {% set name = "scikit-survival" %}
-{% set version = "0.21.0" %}
-
+{% set version = "0.23.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scikit-survival-{{ version }}.tar.gz
-  sha256: adc744b65983dced8142ec31465389fc738405d589051251e5447aad9a1e02bc
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scikit_survival-{{ version }}.tar.gz
+  sha256: 9ee5835e6bd74eab69aac0e71511cc4c033d085bed609e5da771dac053ff7e27
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
-  skip: true  # [py<38]
+  # we do not have osqp for 3.12
+  skip: true  # [py<39 or py>311]
+  ignore_run_exports:
+    - numpy
 
 requirements:
   build:
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
   host:
-    - cython 0.29.32
-    - numpy {{ numpy }}
-    - scikit-learn 1.2.1
-    - setuptools_scm 7.0.4
+    - cython >=3.0.10
+    - numpy >=2.0.0
+    # Upstream specifies scikit-learn as
+    # - scikit-learn >=1.4.0,<1.5.0  # [py<=312]
+    # - scikit-learn >=1.5.0,<1.6.0  # [py>312]
+    # but we dont have 1.4.* compatible with numpy 2.0.
+    # Testing shows no issues with scikit-learn 1.5.2,
+    # also the changelog https://scikit-learn.org/stable/whats_new/v1.5.html
+    # shows no breaking changes between 1.4 and 1.5.
+    - scikit-learn 1.5.2
+    - setuptools_scm >=8
     - packaging 
     - python
     - pip
     - wheel
-    - setuptools
+    - setuptools >=64
   run:
     - python
-    - {{ pin_compatible('numpy') }}
-    - scikit-learn >=1.2.0,<1.3
-    - importlib_resources >=1.3  # [py <= 38]
+    - numpy
+    - scikit-learn >=1.4.0,<1.6
     - ecos
     - joblib
     - numexpr
     - osqp !=0.6.0,!=0.6.1
-    - pandas >=1.0.5
+    - pandas >=1.4.0
     - scipy >=1.3.2
 
 test:
+  source_files:
+    - tests
   imports:
     - sksurv
     - sksurv.datasets
@@ -51,8 +61,14 @@ test:
     - sksurv.linear_model
   commands:
     - pip check
+    # check that pip gets the correct version 
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    # test_fit_and_predict seems unstable on aarch64
+    - pytest tests -k "not test_fit_and_predict"  # [aarch64]
+    - pytest tests  # [not aarch64]
   requires:
     - pip
+    - pytest
 
 about:
   home: https://github.com/sebp/scikit-survival
